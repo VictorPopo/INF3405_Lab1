@@ -24,6 +24,12 @@ public class ClientHandler implements Runnable {
         this.clientPort = socket.getPort();
     }
 
+    /*
+     * params: void
+     * returns: void
+     * Main function to handle all issues related to one specific client.
+     * Handles authentication, message broadcasting and logging
+     * */
     public void run() {
         try (
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -84,11 +90,20 @@ public class ClientHandler implements Runnable {
             }
         }
     }
-
+    /*
+     * params: message: string - Message to print
+     * returns: void
+     * Prints out a message to the user
+     * */
     public void sendMessage(String message) {
         out.println(message);
     }
 
+    /*
+     * params: message: string - Message to log
+     * returns: void
+     * Logs a message in the appropriate file
+     * */
     private void logMessage(String message) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(MESSAGE_LOG_FILE, true))) {
             writer.write(message);
@@ -97,8 +112,13 @@ public class ClientHandler implements Runnable {
             System.out.println("Error saving chat history: " + e.getMessage());
         }
     }
-
-    private void sendLastMessages(PrintWriter out) {
+    
+    /*
+     * params: out: PrintWriter - Text output stream
+     * returns: void
+     * Retrieves messages from the appropriated text file and displays them to the user
+     * */
+	private void sendLastMessages(PrintWriter out) {
         try (BufferedReader reader = new BufferedReader(new FileReader(MESSAGE_LOG_FILE))) {
             String line;
             ArrayList<String> messages = new ArrayList<>();
@@ -117,7 +137,11 @@ public class ClientHandler implements Runnable {
             System.out.println("Error reading chat history: " + e.getMessage());
         }
     }
-
+	/*
+	 * params: password: string - Password of a user
+	 * returns : string
+	 * Handles hashing of the password of a new user
+	 * */
     private static String hashPassword(String password) {
         try {
             java.security.MessageDigest digest = java.security.MessageDigest.getInstance("SHA-256");

@@ -6,6 +6,15 @@ import java.util.Scanner;
 
 public class Client {
     private static Socket socket;
+    
+    /*
+     * params: args: Array<string>
+     * returns: void
+     * Main function for client side
+     * Handles validation and connection to the appropriated server
+     * Creates new thread and socket per client
+     * Handles disconnection from server 
+     * */
 
     public static void main(String[] args) throws Exception {
         Scanner scanner = new Scanner(System.in);

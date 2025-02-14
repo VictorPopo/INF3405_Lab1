@@ -14,6 +14,14 @@ public class Server {
 
     private static final Set<ClientHandler> clientHandlers = new HashSet<>();
 
+    
+    
+    
+    /*
+     * params: args: Array<string> - System arguments
+     * returns: void
+     * Main function of the server. Is responsible for starting the server and hosting all clients
+     * */
     public static void main(String[] args) throws Exception {
         int serverPort = 0;
         Scanner scanner = new Scanner(System.in);
@@ -51,7 +59,14 @@ public class Server {
             listener.close();
         }
     }
-
+    
+    /*
+     * params: void
+     * returns: void
+     * loadUsers is responsible to check if there is a file 
+     * containing user info and loads them into a hashMap.
+     * If not, creates a new one
+     * */
     private static void loadUsers() {
         File file = new File(USER_FILE);
         if (!file.exists()) {
@@ -71,7 +86,14 @@ public class Server {
             System.out.println("Error loading users: " + e.getMessage());
         }
     }
-
+    
+    
+    /*
+     * params: void
+     * returns: void
+     * saveUsers is responsible to take all users in the hashMap attribute
+     * and save them to the .txt file which acts as a database
+     * */
     static synchronized void saveUsers() {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(USER_FILE))) {
             for (var entry : users.entrySet()) {
@@ -82,7 +104,13 @@ public class Server {
             System.out.println("Error saving users: " + e.getMessage());
         }
     }
-
+    
+    /*
+     * params: 
+     * message: string - Message to send
+     * sender: ClientHandler - Instance of ClientHandler representing the user which sent the message
+     * broadcastMessage is responsible to send a message from a user to all other users
+     * */
     public static void broadcastMessage(String message, ClientHandler sender) {
         synchronized (clientHandlers) {
             for (ClientHandler client : clientHandlers) {
