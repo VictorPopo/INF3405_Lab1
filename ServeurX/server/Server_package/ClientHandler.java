@@ -41,10 +41,10 @@ public class ClientHandler implements Runnable {
                 clients.add(this);
             }
 
-            out.println("Enter username:");
+            out.println("Enter username: ");
             username = in.readLine();
 
-            out.println("Enter password:");
+            out.println("Enter password: ");
             String password = in.readLine();
             String hashedPassword = hashPassword(password);
 

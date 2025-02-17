@@ -2,6 +2,8 @@ package client_package;
 
 import java.io.*;
 import java.net.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
 public class Client {
@@ -73,20 +75,42 @@ public class Client {
                 try {
                     String messageFromServer;
                     while ((messageFromServer = in.readLine()) != null) {
-                        System.out.println(messageFromServer);
+
+                        System.out.print("\n" + messageFromServer + "\n");
+
+                        System.out.print("[You - 127.0.0.1:64593 - " 
+                            + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd@HH:mm:ss")) 
+                            + "]: ");
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }).start();
 
+
             while (true) {
-                String message = scanner.nextLine();
+                String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd@HH:mm:ss"));
+                
+                System.out.print("\n[You - 127.0.0.1:64593 - " + timestamp + "]: ");
+
+                String message = scanner.nextLine().trim(); 
+
+                if (message.isEmpty()) {
+                    System.out.println("Error: Empty message is not allowed. Please enter a valid message.");
+                    continue;
+                }
+
+                if (message.split("\\s+").length > 200) {
+                    System.out.println("Error: Your message exceeds 200 words. Please enter a shorter message.");
+                    continue;
+                }
+
                 if (message.equalsIgnoreCase("exit")) {
                     System.out.println("Exiting the chat.");
-                    break; 
+                    break;
                 }
-                out.println(message); 
+
+                out.println(message);
             }
         } finally {
             socket.close();
