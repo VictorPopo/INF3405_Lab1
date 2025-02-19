@@ -1,4 +1,5 @@
 package Server_package;
+import java.util.regex.Pattern;
 
 import java.io.*;
 import java.net.*;
@@ -24,11 +25,33 @@ public class Server {
      * */
     public static void main(String[] args) throws Exception {
         int serverPort = 0;
+        String serverIp = "";
         Scanner scanner = new Scanner(System.in);
+        Pattern ipPattern = Pattern.compile(
+                "^((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\\.){3}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])$"
+            );
 
         loadUsers();
+        
+        while (true) {
+            System.out.print("Enter the server IP address: ");
+            serverIp = scanner.nextLine().trim();
+
+            if (ipPattern.matcher(serverIp).matches()) {
+                try {
+                    InetAddress.getByName(serverIp);
+                    break;
+                } catch (UnknownHostException e) {
+                    System.out.println("Invalid IP address. Please enter a valid IP.");
+                }
+            } else {
+                System.out.println("Invalid IP format. Please enter a valid IPv4 address.");
+            }
+        }
 
         while (true) {
+        	
+        	
             System.out.print("Enter the server port (5000-5050): ");
             try {
                 serverPort = Integer.parseInt(scanner.nextLine());
@@ -44,7 +67,7 @@ public class Server {
         scanner.close();
 
         listener = new ServerSocket(serverPort);
-        System.out.format("The server is running on 127.0.0.1:%d%n", serverPort);
+        System.out.format("The server is running on %s:%d%n", serverIp, serverPort);
 
         try {
             while (true) {

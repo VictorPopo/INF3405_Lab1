@@ -5,6 +5,7 @@ import java.net.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
+import java.util.regex.Pattern;
 
 public class Client {
     private static Socket socket;
@@ -20,9 +21,27 @@ public class Client {
 
     public static void main(String[] args) throws Exception {
         Scanner scanner = new Scanner(System.in);
+        String serverIp = "";
         
-        System.out.print("Enter the server IP: ");
-        String serverAddress = scanner.nextLine();
+        Pattern ipPattern = Pattern.compile(
+                "^((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\\.){3}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])$"
+            );
+        
+        while (true) {
+            System.out.print("Enter the server IP address: ");
+            serverIp = scanner.nextLine().trim();
+
+            if (ipPattern.matcher(serverIp).matches()) {
+                try {
+                    InetAddress.getByName(serverIp);
+                    break;
+                } catch (UnknownHostException e) {
+                    System.out.println("Invalid IP address. Please enter a valid IP.");
+                }
+            } else {
+                System.out.println("Invalid IP format. Please enter a valid IPv4 address.");
+            }
+        }
         
         int port;
         while (true) {
@@ -39,8 +58,8 @@ public class Client {
             }
         }
 
-        socket = new Socket(serverAddress, port);
-        System.out.println("Connected to server on " + serverAddress + ":" + port);
+        socket = new Socket(serverIp, port);
+        System.out.println("Connected to server on " + serverIp + ":" + port);
 
         try (
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -77,10 +96,6 @@ public class Client {
                     while ((messageFromServer = in.readLine()) != null) {
 
                         System.out.print("\n" + messageFromServer + "\n");
-
-                        System.out.print("[You - 127.0.0.1:64593 - " 
-                            + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd@HH:mm:ss")) 
-                            + "]: ");
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -89,9 +104,6 @@ public class Client {
 
 
             while (true) {
-                String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd@HH:mm:ss"));
-                
-                System.out.print("\n[You - 127.0.0.1:64593 - " + timestamp + "]: ");
 
                 String message = scanner.nextLine().trim(); 
 
@@ -109,8 +121,12 @@ public class Client {
                     System.out.println("Exiting the chat.");
                     break;
                 }
-
+                
                 out.println(message);
+                
+                System.out.print("[You - " + serverIp+":"+ port + " - "  
+                      + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd@HH:mm:ss")) 
+                      + "]: "+ message +"\n");
             }
         } finally {
             socket.close();
